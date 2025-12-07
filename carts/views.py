@@ -13,6 +13,11 @@ def _cart_id(request):
 
 
 def add_cart(request, product_id):
+    color = request.GET.get('color', '')
+    size = request.GET.get('size', '')
+    # If you only want to test color and size, keep this line:
+    return HttpResponse(color + ' ' + size)
+
     product = get_object_or_404(Product, id=product_id)
 
     # Get or create Cart
