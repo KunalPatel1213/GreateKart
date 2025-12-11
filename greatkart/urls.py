@@ -24,6 +24,7 @@ urlpatterns = [
     path('store/', include('store.urls')),
     path('', views.home, name='home'),
     path('cart/', include('carts.urls')),
+    path('accounts/', include('accounts.urls'))
 ]
 
 if settings.DEBUG:  # serve media files only in development
