@@ -26,7 +26,8 @@ SECRET_KEY = ')d5v=bn(georp(2i(*bqpsxcn5mp3r9gh_2=m%@(-*_v@q!(&^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ✅ Fixed here
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -42,7 +43,6 @@ INSTALLED_APPS = [
     'accounts',
     'store',
     'carts'
-
 ]
 
 MIDDLEWARE = [
@@ -128,14 +128,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR /'static'
+STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_DIRS = [
     'greatkart/static',
 ]
 
-# media file configaration
+# media file configuration
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR /'media')
+MEDIA_ROOT = os.path.join(BASE_DIR / 'media')
 
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
@@ -143,9 +143,9 @@ MESSAGE_TAGS = {
 }
 
 
-#SMTP configration 
+# SMTP configuration 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'kp109393@gmail.com'
-EMAIL_HOST_PASSWORD = 'bdjn lndt gwdd ubfw'
+EMAIL_HOST_PASSWORD = 'aitv zjor vjwb fwsv'   
 EMAIL_USE_TLS = True
