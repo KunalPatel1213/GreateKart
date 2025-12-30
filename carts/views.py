@@ -14,7 +14,7 @@ def _cart_id(request):
 
 
 def add_cart(request, product_id):
-    product = Product.objects.get(id=product_id)
+    product = get_object_or_404(Product, id=product_id)
     product_variation = []
     if request.method == 'POST':
         for item in request.POST:
@@ -29,7 +29,6 @@ def add_cart(request, product_id):
                 product_variation.append(variation)
             except:
                 pass
-    product = get_object_or_404(Product, id=product_id)
 
     # Get or create Cart
     try:
@@ -38,8 +37,11 @@ def add_cart(request, product_id):
         cart = Cart.objects.create(cart_id=_cart_id(request))
     cart.save()
 
-    # ✅ Check if same product with same variations exists
-    cart_items = CartItem.objects.filter(product=product, cart=cart)
+    if request.user.is_authenticated:
+        cart_items = CartItem.objects.filter(product=product, user=request.user)
+    else:
+        cart_items = CartItem.objects.filter(product=product, cart=cart)
+
     existing_item = None
     for item in cart_items:
         if set(item.variations.all()) == set(product_variation):
@@ -50,11 +52,18 @@ def add_cart(request, product_id):
         existing_item.quantity += 1
         existing_item.save()
     else:
-        cart_item = CartItem.objects.create(
-            product=product,
-            quantity=1,
-            cart=cart,
-        )
+        if request.user.is_authenticated:
+            cart_item = CartItem.objects.create(
+                product=product,
+                quantity=1,
+                user=request.user,
+            )
+        else:
+            cart_item = CartItem.objects.create(
+                product=product,
+                quantity=1,
+                cart=cart,
+            )
         if len(product_variation) > 0:
             cart_item.variations.clear()
             for item in product_variation:
@@ -64,53 +73,56 @@ def add_cart(request, product_id):
     return redirect('cart')
 
 
-def remove_cart(request, product_id, cart_item_id=None):
-    cart = Cart.objects.get(cart_id=_cart_id(request))
+def remove_cart(request, product_id, cart_item_id):
+
     product = get_object_or_404(Product, id=product_id)
+    try:
+        if request.user.is_authenticated:
+            cart_item = CartItem.objects.get(product=product, user=request.user, id=cart_item_id)
+        else:
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
 
-    # ✅ remove only the correct variation item
-    if cart_item_id:
-        cart_item = get_object_or_404(CartItem, id=cart_item_id, cart=cart, product=product)
-    else:
-        cart_item = CartItem.objects.filter(product=product, cart=cart).first()
-
-    if cart_item:
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
         else:
             cart_item.delete()
-
+    except:
+        pass
     return redirect('cart')
 
-
-def remove_cart_item(request, product_id, cart_item_id=None):
-    cart = Cart.objects.get(cart_id=_cart_id(request))
+def remove_cart_item(request, product_id, cart_item_id):
     product = get_object_or_404(Product, id=product_id)
-
-    if cart_item_id:
-        CartItem.objects.filter(id=cart_item_id, product=product, cart=cart).delete()
+    if request.user.is_authenticated:
+        cart_item = CartItem.objects.get(product=product, user=request.user, id=cart_item_id)
     else:
-        CartItem.objects.filter(product=product, cart=cart).delete()
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+        cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
 
+    cart_item.delete()
     return redirect('cart')
-
 
 def cart(request, total=0, quantity=0, cart_items=None):
-    tax = 0
-    grand_total = 0
     try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        tax = 0
+        grand_total = 0
+
+        if request.user.is_authenticated:
+            cart_items = CartItem.objects.filter(user=request.user, is_active=True)
+        else:
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
             quantity += cart_item.quantity
 
-        tax = (2 * total) / 100 if total > 0 else 0
+        tax = (2 * total) / 100
         grand_total = total + tax
+
     except ObjectDoesNotExist:
-        cart_items = []  # ensure cart_items is iterable even if empty
+        cart_items = []
 
     context = {
         'total': total,
@@ -119,16 +131,20 @@ def cart(request, total=0, quantity=0, cart_items=None):
         'tax': tax,
         'grand_total': grand_total,
     }
+
     return render(request, 'store/cart.html', context)
 
 
-@login_required(login_url = 'login')
+@login_required(login_url='login')
 def checkout(request, total=0, quantity=0, cart_items=None):
     tax = 0
     grand_total = 0
     try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        if request.user.is_authenticated:
+            cart_items = CartItem.objects.filter(user=request.user, is_active=True)
+        else:
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
@@ -137,7 +153,7 @@ def checkout(request, total=0, quantity=0, cart_items=None):
         tax = (2 * total) / 100 if total > 0 else 0
         grand_total = total + tax
     except ObjectDoesNotExist:
-        cart_items = []  # ensure cart_items is iterable even if empty
+        cart_items = []
 
     context = {
         'total': total,
@@ -146,4 +162,4 @@ def checkout(request, total=0, quantity=0, cart_items=None):
         'tax': tax,
         'grand_total': grand_total,
     }
-    return render (request, 'store/checkout.html', context)
+    return render(request, 'store/checkout.html', context)
