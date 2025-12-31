@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
 
 <section class="section-content padding-y bg">
   <div class="container">
@@ -16,7 +18,8 @@
             <p class="card-text mb-0">{{ order.email }}</p>
             <p class="card-text mb-0">{{ order.phone }}</p>
             {% if order.order_note %}
-            <b>Order Note: </b> {{ order.order_note }} {% endif %}
+            <b>Order Note: </b> {{ order.order_note }}
+            {% endif %}
           </div>
         </div>
 
@@ -44,23 +47,18 @@
                   <td>
                     <figure class="itemside align-items-center">
                       <div class="aside">
-                        <img
-                          src="{{ cart_item.product.images.url }}"
-                          class="img-sm"
-                        />
+                        <img src="{{ cart_item.product.images.url }}" class="img-sm" />
                       </div>
                       <figcaption class="info">
-                        <a
-                          href="{{ cart_item.product.get_url }}"
-                          class="title text-dark"
-                          >{{ cart_item.product.product_name }}</a
-                        >
+                        <a href="{{ cart_item.product.get_url }}" class="title text-dark">
+                          {{ cart_item.product.product_name }}
+                        </a>
                         <p class="text-muted small">
-                          {% if cart_item.variations.all %} {% for item in
-                          cart_item.variations.all %} {{
-                          item.variation_category|capfirst }} : {{
-                          item.variation_value|capfirst }} <br />
-                          {% endfor %} {% endif %}
+                          {% if cart_item.variations.all %}
+                            {% for item in cart_item.variations.all %}
+                              {{ item.variation_category|capfirst }} : {{ item.variation_value|capfirst }} <br>
+                            {% endfor %}
+                          {% endif %}
                         </p>
                       </figcaption>
                     </figure>
@@ -71,9 +69,7 @@
                   <td>
                     <div class="price-wrap">
                       <var class="price">${{ cart_item.sub_total }}</var>
-                      <small class="text-muted">
-                        ${{ cart_item.product.price }}</small
-                      >
+                      <small class="text-muted">${{ cart_item.product.price }}</small>
                     </div>
                   </td>
                 </tr>
@@ -84,6 +80,7 @@
         </div>
       </aside>
       <!-- col.// -->
+
       <aside class="col-lg-4">
         <div class="card">
           <div class="card-body">
@@ -105,9 +102,7 @@
             <p class="text-center mb-3">
               <img src="{% static 'images/misc/payments.png' %}" height="26" />
             </p>
-            <a href="{% url 'checkout' %}" class="btn btn-primary btn-block">
-              Make Payment
-            </a>
+            <div id="paypal-button-container"></div>
           </div>
           <!-- card-body.// -->
         </div>
@@ -116,10 +111,36 @@
       <!-- col.// -->
     </div>
     <!-- row.// -->
-
     <!-- ============================ COMPONENT 1 END .// ================================= -->
-  </div>
+  </div>here
   <!-- container .//  -->
 </section>
+
+<script>
+paypal.Buttons({
+
+  style: {
+    color: 'blue',    
+    shape: 'rect',
+    label: 'pay',
+    height: 40
+  },
+  createOrder: function(data, actions) {
+    return actions.order.create({
+      purchase_units: [{
+        amount: {
+          value: '{{ grand_total }}'  
+        }
+      }]
+    });
+  },
+
+  onApprove: function(data, actions) {
+    return actions.order.capture().then(function(details) {
+      alert('Transaction completed by ' + details.payer.name.given_name + '!');
+    });
+  }
+}).render('#paypal-button-container');
+</script>
 
 {% endblock %}

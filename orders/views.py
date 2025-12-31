@@ -55,8 +55,7 @@ def place_order(request):
             order_number = current_date + str(data.id)
             data.order_number = order_number
             data.save()
-
-            # ✅ use the saved object directly
+            
             order = data
 
             context = {
@@ -70,7 +69,7 @@ def place_order(request):
         else:
             return redirect('checkout')
 
-    # ✅ FIX: agar GET request hai to checkout page render karo
+ 
     return render(request, 'store/checkout.html', {
         'cart_items': cart_items,
         'total': total,

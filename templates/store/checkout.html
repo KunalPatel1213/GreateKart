@@ -29,7 +29,6 @@
                     <div class="form-row">
                         <div class="col form-group">
                             <label>Email</label>
-                            <!-- ✅ FIX: name="email" -->
                             <input type="email" name="email" class="form-control" required>
                         </div>
                          <div class="col form-group">
@@ -50,18 +49,15 @@
                     <div class="form-row">
                         <div class="col form-group">
                             <label>City</label>
-                            <!-- ✅ FIX: name="city" -->
                             <input type="text" name="city" class="form-control" required>
                         </div>
                          <div class="col form-group">
                             <label>State</label>
-                            <!-- ✅ FIX: name="state" -->
                             <input type="text" name="state" class="form-control" required>
                         </div>
                     </div>
                     <div class="col form-group">
                         <label>Country</label>
-                        <!-- ✅ FIX: name="country" -->
                         <input type="text" name="country" class="form-control" required>
                     </div>
                     <div class="form-row">
@@ -116,7 +112,7 @@
                 </table>
                 <button type="submit" name="submit" class="btn btn-primary btn-block">Place Order</button>
                 <a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
-                </form>
+                </form> <!-- ✅ Form properly closed here -->
             </div> <!-- card-body.// -->
         </div> <!-- card.// -->
     </aside> <!-- col.// -->
