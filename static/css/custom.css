@@ -1,0 +1,88 @@
+/* --- Rating Stars CSS - Add this to your custom.css --- */
+
+.rate > input {
+  display: none;
+}
+
+.rate {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.rate > label {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 2rem;
+  color: #ddd;
+  transition: color 0.2s ease;
+}
+
+/* Default star - empty/gray */
+.rate > label::before {
+  display: inline-block;
+  font-family: "Font Awesome 6 Free";
+  font-weight: 400;
+  content: "\f005"; /* star icon */
+  color: #ddd;
+  transition: color 0.2s ease;
+}
+
+/* Half star */
+.rate .half::before {
+  content: "\f089"; /* half star */
+}
+
+/* When input is checked - star becomes yellow */
+.rate > input:checked ~ label::before {
+  color: #ffb503;
+  font-weight: 900;
+}
+
+/* Hover effect - all stars up to hovered one turn yellow */
+.rate > label:hover::before,
+.rate > label:hover ~ label::before {
+  color: #ffb503;
+  font-weight: 900;
+}
+
+/* Hover on already checked stars - darker yellow */
+.rate > input:checked ~ label:hover::before,
+.rate > input:checked ~ label:hover ~ label::before {
+  color: #cc9000;
+  font-weight: 900;
+}
+
+/* Rating container styling */
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.rating-text {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Optional: Different star sizes */
+.rate.small > label {
+  font-size: 1.2rem;
+}
+
+.rate.medium > label {
+  font-size: 1.8rem;
+}
+
+.rate.large > label {
+  font-size: 2.5rem;
+}

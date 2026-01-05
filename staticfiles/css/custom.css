@@ -1,0 +1,35 @@
+/* --- Rating Stars CSS --- */
+.rate > input {
+    display: none;
+}
+
+.rate {
+    display: inline-block;
+    border: 0;
+}
+
+.rate > label {
+    float: left; /* stars appear in correct order */
+}
+
+.rate > label:before {
+    display: inline-block;
+    font-size: 1.5rem;
+    font-family: "Font Awesome 6 Free"; /* correct family for FA6 */
+    font-weight: 900; /* required for solid icons */
+    content: "\f005"; /* star icon */
+    margin: 0;
+    padding: 0.3rem .2rem;
+    cursor: pointer;
+}
+
+.rate .half:before {
+    content: "\f089"; /* half star */
+    position: absolute;
+    padding-right: 0;
+}
+
+input:checked ~ label,
+label:hover ~ label {
+    color: #ffb503; /* yellow star color */
+}
