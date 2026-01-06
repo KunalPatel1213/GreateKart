@@ -86,3 +86,8 @@
 .rate.large > label {
   font-size: 2.5rem;
 }
+
+
+.rating-star i {
+  color: #ffb503 !important;
+}
