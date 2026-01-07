@@ -9,7 +9,6 @@ from django.db.models import Q
 from .forms import ReviewForm
 from orders.models import OrderProduct
 
-
 # Create your views here.
 def store(request, category_slug=None):
     categories = None
@@ -47,10 +46,10 @@ def product_detail(request, category_slug, product_slug):
         single_product = None
         in_cart = False
 
-    try:
+    # ✅ Fix: check only if user is authenticated
+    orderproduct = None
+    if request.user.is_authenticated:
         orderproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
-    except orderproduct.DoesNotExist:
-        orderproduct = None
 
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
     
@@ -58,7 +57,7 @@ def product_detail(request, category_slug, product_slug):
         'single_product': single_product,
         'in_cart': in_cart,
         'orderproduct': orderproduct,
-        'reviews': reviews
+        'reviews': reviews,
     }
     return render(request, 'store/product_detail.html', context)
 
