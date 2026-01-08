@@ -222,3 +222,8 @@ def resetPassword(request):
             messages.error(request, 'Password do not match!')
             return redirect('resetPassword')
     return render(request,  'accounts/resetPassword.html')
+
+
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    return render(request, 'accounts/my_orders.html')
