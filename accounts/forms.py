@@ -48,6 +48,7 @@ class UserForm(forms.ModelForm):
 
 # ✅ Profile edit form
 class UserProfileForm(forms.ModelForm):
+    profile_picture = forms.ImageField(required=False, error_messages={'invalid':("Image files only")}, widget=forms.FileInput)    
     class Meta:
         model = UserProfile
         fields = ('address_line_1', 'address_line_2', 'city', 'state', 'profile_picture')
