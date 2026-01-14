@@ -5,12 +5,23 @@
     <div class="card">
       <div class="row no-gutters">
         <aside class="col-md-6">
-          <article class="gallery-wrap">
-            <div class="img-big-wrap">
-              <a href="#"><img src="{{ single_product.images.url}}" /></a>
-            </div>
-            <!-- img-big-wrap.// -->
-          </article>
+      <article class="gallery-wrap text-center">
+  <div class="img-big-wrap mainImage d-flex justify-content-center">
+    <img src="{{ single_product.images.url}}" class="img-fluid mx-auto d-block" />
+  </div>
+</article>
+
+<ul class="thumb d-flex justify-content-center list-unstyled">
+  {% for i in product_gallery %}
+  <li class="mx-2">
+    <a href="{{ i.image.url }}" target="mainImage">
+      <img src="{{ i.image.url }}" alt="Product Image" class="img-thumbnail">
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+
           <!-- gallery-wrap .end// -->
         </aside>
         <main class="col-md-6 border-left">
