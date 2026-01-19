@@ -8,9 +8,9 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q 
 from .forms import ReviewForm
 from orders.models import OrderProduct
- 
+  
 
-# Create your views here.
+# Store page
 def store(request, category_slug=None):
     categories = None
     products = None
@@ -39,6 +39,7 @@ def store(request, category_slug=None):
     return render(request, 'store/store.html', context)
 
 
+# Product detail page
 def product_detail(request, category_slug, product_slug):
     try:
         single_product = Product.objects.get(category__slug=category_slug, slug=product_slug)
@@ -47,15 +48,16 @@ def product_detail(request, category_slug, product_slug):
         single_product = None
         in_cart = False
 
-    # ✅ Fix: check only if user is authenticated
     orderproduct = None
     if request.user.is_authenticated:
         orderproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
 
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
-
     product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
 
+    # ✅ Fix: read selected values from GET (after redirect from add_cart)
+    selected_color = request.GET.get('color')
+    selected_size = request.GET.get('size')
 
     context = {
         'single_product': single_product,
@@ -63,10 +65,13 @@ def product_detail(request, category_slug, product_slug):
         'orderproduct': orderproduct,
         'reviews': reviews,
         'product_gallery': product_gallery,
+        'selected_color': selected_color,
+        'selected_size': selected_size,
     }
     return render(request, 'store/product_detail.html', context)
 
 
+# Search
 def search(request):
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
@@ -81,6 +86,7 @@ def search(request):
             return render(request, 'store/store.html', context)
 
 
+# Submit review
 def submit_review(request, product_id):
     if request.method == 'POST':
         try:
